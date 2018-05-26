@@ -55,29 +55,21 @@ const getPathPartArray = (pathString) => {
 const addPath = (root, pathPartArray ) => {
 
     const addPathInner = (accum, parentNode, remainingPaths) => {
-
         if (!remainingPaths || remainingPaths.length === 0) { return accum; }
-
         const pathPart = remainingPaths[0];
         const remaining = remainingPaths.slice(1);
-        if (!accum) {
-            // new tree, no root yet
-            const newRoot = new TreeNode(pathPart);
-            return addPathInner(newRoot, newRoot, remaining);
+        const childNodeMatchingPathPart = _.find(parentNode.children, ['pathPart', pathPart]);
+        if ( childNodeMatchingPathPart ) {
+            return addPathInner(accum, childNodeMatchingPathPart, remaining);
         }
         else {
-            const childNodeMatchingPathPart = _.find(parentNode.children, ['pathPart', pathPart]);
-            if ( childNodeMatchingPathPart ) {
-                return addPathInner(accum, childNodeMatchingPathPart, remaining);
-            }
-            else {
-                const newChild = new TreeNode(pathPart);
-                parentNode.setChild(newChild);
-                return addPathInner(accum, newChild, remaining);
-            }
+            const newChild = new TreeNode(pathPart);
+            parentNode.setChild(newChild);
+            return addPathInner(accum, newChild, remaining);
         }
     };
 
+    if (!root) throw new Error("root needs to exist before adding any paths"); // shouldn't happen since createPathTree doesn't allow it, but still.
     return addPathInner(root, root, pathPartArray)
 };
 
@@ -90,25 +82,11 @@ const createPathTree = (paths) => {
     if (paths.length === 0) {
         throw new Error("stop wasting my time!");
     }
-    const root = addPath(undefined, [""]); // initialize a root for the tree (all API paths share the same root)
+    const root = new TreeNode("");
     paths.forEach((path) =>
         addPath(root, getPathPartArray(path))
     );
     return root;
-};
-
-/**
- * @param {TreeNode} node
- * @returns {String[]} the tree beneath the node, converted into an array of path strings.
- */
-const getPathsArray = (node) => {
-    if (treeIsEmpty(node)) return []; // shouldn't happen since createPathTree doesn't allow it, but still.
-    if (node.children.length === 0) {
-        return [node.getPath()];
-    }
-    return node.children.reduce( (accum, curr) => {
-        return [...accum, ...getPathsArray(curr)];
-    }, []);
 };
 
 /**
@@ -125,9 +103,23 @@ const treeIsEmpty = (root) => {
 const printTree = (node) => {
     return JSON.stringify(node, ((key,value) => {
         if (key === 'parent' && value) return value.pathPart;
-        else if (key === 'parent' && !value) return "root node?";
+        else if (key === 'parent' && !value) return "n/a";
         else return value;
     }), 2);
+};
+
+/**
+ * @param {TreeNode} node
+ * @returns {String[]} the tree beneath the node, converted into an array of path strings.
+ */
+const getPathsArray = (node) => {
+    if (treeIsEmpty(node)) return []; // shouldn't happen since createPathTree doesn't allow it, but still.
+    if (node.children.length === 0) {
+        return [node.getPath()];
+    }
+    return node.children.reduce( (accum, curr) => {
+        return [...accum, ...getPathsArray(curr)];
+    }, []);
 };
 
 module.exports = {

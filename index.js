@@ -1,19 +1,19 @@
 const _ = require('lodash');
 const tree = require('./PathTree');
 
-// const pathsIn = [
-//     "/pro/something/whatevs",
-//     "/pro/something/foo",
-//     "/pro/x/y",
-//     "/feedback"
-// ];
-
 const pathsIn = [
-    "pro/something/whatevs",
-    "pro/something/foo",
-    "pro/x/y",
-    "feedback"
+    "/pro/something/whatevs",
+    "/pro/something/foo",
+    "/pro/x/y",
+    "/feedback"
 ];
+
+// const pathsIn = [
+//     "pro/something/whatevs",
+//     "pro/something/foo",
+//     "pro/x/y",
+//     "feedback"
+// ];
 
 
 // const pathsIn = [
